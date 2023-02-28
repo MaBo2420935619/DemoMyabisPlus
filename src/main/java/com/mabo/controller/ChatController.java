@@ -46,6 +46,7 @@ public class ChatController {
         queryWrapper.lambda().eq(ChatInfo::getId,"1").eq(ChatInfo::getId,"1");
         List<ChatInfo> list = chatService.list(queryWrapper);
         System.out.println(list);
+
         return chatService.getById(userId);
     }
     /**
@@ -59,6 +60,7 @@ public class ChatController {
     @PostMapping("/getList")
     public List<ChatInfo> getList(){
         List<ChatInfo> userInfoEntityList = chatService.list();
+
         return userInfoEntityList;
     }
     /**
