@@ -1,5 +1,6 @@
 package com.mabo.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -9,9 +10,8 @@ import com.mabo.entity.ChatInfo;
 import com.mabo.service.ChatService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,7 +27,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/chat")
-@Api(value = "用户接口", tags = {"用户接口"})
+@Api(tags = "用户接口")
 public class ChatController {
     @Resource
     private ChatService chatService;
@@ -46,8 +46,6 @@ public class ChatController {
         queryWrapper.lambda().eq(ChatInfo::getId,"1").eq(ChatInfo::getId,"1");
         List<ChatInfo> list = chatService.list(queryWrapper);
         System.out.println(list);
-        List<ChatInfo> chatInfos = chatService.queryByMsg("123");
-        System.out.println(chatInfos);
         return chatService.getById(userId);
     }
     /**
@@ -57,7 +55,8 @@ public class ChatController {
      * @Param  userId  用户ID
      * @Return List<UserInfoEntity> 用户实体集合
      */
-    @RequestMapping("/getList")
+    @ApiOperation("获取集合")
+    @PostMapping("/getList")
     public List<ChatInfo> getList(){
         List<ChatInfo> userInfoEntityList = chatService.list();
         return userInfoEntityList;
@@ -68,10 +67,10 @@ public class ChatController {
      * @CreateTime 2019/6/8 16:37
      * @Return IPage<UserInfoEntity> 分页数据
      */
-    @RequestMapping("/getInfoListPage")
-    public IPage<ChatInfo> getInfoListPage(){
+    @PostMapping("/getInfoListPage")
+    public IPage<ChatInfo> getInfoListPage(@RequestParam int pageNum,@RequestParam int size){
         //需要在Config配置类中配置分页插件
-        IPage<ChatInfo> page = new Page<>(10,2);
+        IPage<ChatInfo> page = new Page<>(pageNum,size);
 //        LambdaQueryWrapper<ChatInfo> queryWrapper = Wrappers.lambdaQuery();
 //        queryWrapper.eq(ChatInfo::getId,"1").eq(ChatInfo::getId,"1");
         IPage<ChatInfo> page1 = chatService.page(page);
@@ -83,7 +82,7 @@ public class ChatController {
      * @CreateTime 2019/6/8 16:39
      * @Return Collection<UserInfoEntity> 用户实体集合
      */
-    @RequestMapping("/getListMap")
+    @PostMapping("/getListMap")
     public Collection<ChatInfo> getListMap(){
         Map<String,Object> map = new HashMap<>();
         //kay是字段名 value是字段值
@@ -96,7 +95,7 @@ public class ChatController {
      * @Author Sans
      * @CreateTime 2019/6/8 16:40
      */
-    @RequestMapping("/saveInfo")
+    @PostMapping("/saveInfo")
     public void saveInfo(){
         ChatInfo userInfoEntity = new ChatInfo();
         userInfoEntity.setId("小龙");
@@ -108,7 +107,7 @@ public class ChatController {
      * @Author Sans
      * @CreateTime 2019/6/8 16:42
      */
-    @RequestMapping("/saveInfoList")
+    @PostMapping("/saveInfoList")
     public void saveInfoList(){
         //创建对象
         ChatInfo userInfoEntity = new ChatInfo();
@@ -128,7 +127,7 @@ public class ChatController {
      * @Author Sans
      * @CreateTime 2019/6/8 16:47
      */
-    @RequestMapping("/updateInfo")
+    @PostMapping("/updateInfo")
     public void updateInfo(){
         //根据实体中的ID去更新,其他字段如果值为null则不会更新该字段,参考yml配置文件
         ChatInfo userInfoEntity = new ChatInfo();
@@ -141,7 +140,7 @@ public class ChatController {
      * @Author Sans
      * @CreateTime 2019/6/8 16:50
      */
-    @RequestMapping("/saveOrUpdateInfo")
+    @PostMapping("/saveOrUpdateInfo")
     public void saveOrUpdate(){
         //传入的实体类userInfoEntity中ID为null就会新增(ID自增)
         //实体类ID值存在,如果数据库存在ID就会更新,如果不存在就会新增
@@ -155,7 +154,7 @@ public class ChatController {
      * @Author Sans
      * @CreateTime 2019/6/8 16:52
      */
-    @RequestMapping("/deleteInfo")
+    @PostMapping("/deleteInfo")
     public void deleteInfo(String userId){
         chatService.removeById(userId);
     }
@@ -164,7 +163,7 @@ public class ChatController {
      * @Author Sans
      * @CreateTime 2019/6/8 16:55
      */
-    @RequestMapping("/deleteInfoList")
+    @PostMapping("/deleteInfoList")
     public void deleteInfoList(){
         List<String> userIdlist = new ArrayList<>();
         userIdlist.add("12");
@@ -176,12 +175,28 @@ public class ChatController {
      * @Author Sans
      * @CreateTime 2019/6/8 16:57
      */
-    @RequestMapping("/deleteInfoMap")
+    @PostMapping("/deleteInfoMap")
     public void deleteInfoMap(){
         //kay是字段名 value是字段值
         Map<String,Object> map = new HashMap<>();
         map.put("skill","删除");
         map.put("fraction",10L);
         chatService.removeByMap(map);
+    }
+
+    /**
+     * 查询全部信息
+     * @Author Sans
+     * @CreateTime 2019/6/8 16:35
+     * @Param  userId  用户ID
+     * @Return List<UserInfoEntity> 用户实体集合
+     */
+    @ApiOperation("分页查询")
+    @PostMapping("/page")
+    public IPage<ChatInfo> getList(@RequestBody JSONObject inData){
+        int pageNum = inData.getInteger("pageNum");
+        int size = inData.getInteger("size");
+        IPage<ChatInfo> page = chatService.page(new Page<>(pageNum, size));
+        return page;
     }
 }
