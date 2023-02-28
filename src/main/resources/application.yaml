@@ -1,0 +1,24 @@
+mybatis:
+  config-location: classpath:mybatis.cfg.xml    #  mybatis主配置文件所在路径
+  type-aliases-package: com.mabo.entity  #  定义所有操作类的别名所在包
+  mapper-locations:                                     #  所有的mapper映射文件
+    - classpath:mapper/*.xml
+
+
+spring: #springboot的配置
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  datasource: #定义数据源
+    #127.0.0.1为本机测试的ip，3306是mysql的端口号。serverTimezone是定义时区，照抄就好，mysql高版本需要定义这些东西
+    #useSSL也是某些高版本mysql需要问有没有用SSL连接
+    url: jdbc:mysql://127.0.0.1/test?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8
+    username: root  #数据库用户名，root为管理员
+    password: 123456 #该数据库用户的密码
+
+# mybatis-plus相关配置
+mybatis-plus:
+  # xml扫描，多个目录用逗号或者分号分隔（告诉 Mapper 所对应的 XML 文件位置）
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
