@@ -1,2 +1,2 @@
 # DemoList
-继承mybatisplus和swagger3的demo
+集成mybatisplus和swagger3的demo
