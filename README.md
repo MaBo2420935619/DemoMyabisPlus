@@ -1,2 +1,2 @@
 # DemoList
-随便写的demo
+继承mybatisplus和swagger3的demo
